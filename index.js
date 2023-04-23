@@ -31,16 +31,25 @@ const collection = client.db("liftit").collection("users");
 app.post('/forgotPassword', (req, res) => {
   const email = req.query.email;
 
-  collection.updateOne(
-    { _id: new ObjectId("643e77a1eac670cf0511f5c1")},
-    { $push: { passwords: email.toString() } },
-  ).then(result => {
+  collection.findOne({ email }).then(result => {
     console.log(result)
-    res.send('succsess')
-  }).catch(err => {
-    console.error(err);
-    res.send('failed')
+    if (result != null){
+      collection.updateOne(
+        { _id: new ObjectId("643e77a1eac670cf0511f5c1")},
+        { $push: { passwords: email.toString() } },
+      ).then(result => {
+        console.log(result)
+        res.send('email exists')
+      }).catch(err => {
+        console.error(err);
+       
+      })
+    }else {
+      res.send('email does not exists')
+      console.log('email does not exists')
+    }
   })
+  
 })
 
 app.post('/renameAccount', (req, res) => {
