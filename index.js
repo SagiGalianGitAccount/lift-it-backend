@@ -28,6 +28,66 @@ const client = new MongoClient(uri, {
 });
 const collection = client.db("liftit").collection("users");
 
+app.post('/forgotPassword', (req, res) => {
+  const email = req.query.email;
+
+  collection.updateOne(
+    { _id: new ObjectId("643e77a1eac670cf0511f5c1")},
+    { $push: { passwords: email.toString() } },
+  ).then(result => {
+    console.log(result)
+    res.send('succsess')
+  }).catch(err => {
+    console.error(err);
+    res.send('failed')
+  })
+})
+
+app.post('/renameAccount', (req, res) => {
+  const accountId = req.query.accountId;
+  const newName = req.query.newName;
+
+  collection.updateOne({_id: new ObjectId(accountId)}, {
+    $set: {name: newName}
+  }).then(result => {
+    console.log("Successfuly updated the name for id - " + accountId)
+    res.send("Successfuly updated the name for id - " + accountId)
+  }).catch((err) => {
+    console.error(err)
+    res.send('Could not change the Name for - ' + accountId)
+  })
+})
+
+app.post('/updateEmail', (req, res) => {
+  const accountId = req.query.accountId;
+  const newEmail = req.query.newEmail;
+
+  collection.updateOne({_id: new ObjectId(accountId)}, {
+    $set: {email: newEmail}
+  }).then(result => {
+    console.log("Successfuly updated the email for id - " + accountId)
+    res.send("Successfuly updated the email for id - " + accountId)
+  }).catch((err) => {
+    console.error(err)
+    res.send('Could not change the email for - ' + accountId)
+  })
+})
+
+app.post('/changeAccountPassword', (req, res) => {
+  const accountId = req.query.accountId;
+  const newPassword = req.query.newPassword;
+
+  collection.updateOne({_id: new ObjectId(accountId)}, {
+    $set: {password: newPassword}
+  }).then(result => {
+    console.log("Successfuly updated the password for id - " + accountId)
+    res.send("Successfuly updated the password for id - " + accountId)
+  }).catch((err) => {
+    console.error(err)
+    res.send('Could not change the password for - ' + accountId)
+  })
+})
+
 app.get("/getExercises", (req, res) => {
   const accountId = req.query.accountId;
   const muscleId = req.query.muscleId;
