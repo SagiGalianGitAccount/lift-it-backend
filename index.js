@@ -4,8 +4,9 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 
 const corsOptions = {
   origin: [
-    "https://prismatic-queijadas-0e8da0.netlify.app",
+    "https://prismatic-queijadas-0e8da0.netlify.app", // netfliy
     "http://localhost:3000",
+    "https://liftit-380a1.web.app", //firebase hosting
   ],
   allowedHeaders: ["Content-Type"],
   exposedHeaders: ["Access-Control-Allow-Origin"],
@@ -454,6 +455,7 @@ app.post("/createAccount", (req, res) => {
   const name = req.query.name;
   const password = req.query.password;
   const email = req.query.email;
+  const type = req.query.type;
 
   collection
     .insertOne({
@@ -465,6 +467,8 @@ app.post("/createAccount", (req, res) => {
       premium: false,
       date: new Date(),
       inTrial: true,
+      type,
+      trainers: Array(),
     })
     .then((result) => {
       res.send("Success");
@@ -501,6 +505,28 @@ app.get("/checkAccount", (req, res) => {
     .catch((err) => {
       res.send("User doesnt exist");
       console.log(err);
+    });
+});
+
+app.post("/addtrainer", (req, res) => {
+  const accountId = req.query.accountId;
+  const trainer_id = req.query.trainer_id;
+  const trainer_name = req.query.trainer_name;
+
+  collection
+    .updateOne(
+      { _id: new ObjectId(accountId)},
+      {
+        $push: {
+          trainers: {trainer_name, trainer_id},
+        },
+      }
+    )
+    .then((result) => {
+      res.send("Added trainer");
+    })
+    .catch((err) => {
+      res.send("Could not add trainer");
     });
 });
 
